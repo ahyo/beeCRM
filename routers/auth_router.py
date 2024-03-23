@@ -7,7 +7,6 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from helpers.myfunctions import verify_password
 from actions.auth_action import create_access_token
 from fastapi.requests import Request
-from actions.client_token_action import update_token
 
 router = APIRouter(
     tags=["Auth"],
@@ -23,7 +22,10 @@ async def login(
     if not client:
         return JSONResponse(
             status_code=400,
-            content={"error":1,"message": "Invalid credential",},
+            content={
+                "error": 1,
+                "message": "Invalid credential",
+            },
         )
     if not verify_password(client.password, request.password):
         return JSONResponse(
@@ -32,8 +34,6 @@ async def login(
         )
 
     access_token = create_access_token(data={"email": client.email})
-    
-    update_token(db,client.id,access_token)
 
     return {
         "access_token": access_token,

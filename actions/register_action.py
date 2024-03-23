@@ -1,10 +1,11 @@
-from models.register_model import Register, RegisterBase
+from models.register_model import Register, RegisterBase, RegisterVerified
 from sqlalchemy.orm.session import Session
 from helpers.myfunctions import get_random_string, send_register_email, random_number
 from fastapi.responses import JSONResponse
 from fastapi import BackgroundTasks
 import time
 from actions.client_action import create_client
+import datetime
 
 
 def create_register(db: Session, request: RegisterBase):
@@ -37,14 +38,50 @@ def create_register(db: Session, request: RegisterBase):
 
 
 # update register verified flag
-def update_verified(db: Session, code: str):
-    reg = db.query(Register).filter(Register.verification_code == code)
-    reg.update({Register.verified: True})
+def update_verified(db: Session, data: RegisterVerified, type: str):
+    reg = db.query(Register).filter(Register.email == data.email)
+    if type == "otp":
+        reg.update(
+            {Register.otp_verified: True, Register.otp_date: datetime.datetime.now()}
+        )
+    else:
+        # email verified
+        reg.update({Register.verified: True})
     db.commit()
 
 
-def verify_register(db: Session, code: str):
-    reg = db.query(Register).filter(Register.verification_code == code).first()
+def verify_register_otp(db: Session, data: RegisterVerified):
+    reg = (
+        db.query(Register)
+        .filter(Register.otp_code == data.code)
+        .filter(Register.email == data.email)
+        .first()
+    )
+    if not reg:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "message": "Invalid verification otp code",
+            },
+        )
+    if reg.otp_verified:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "message": "Otp sudah verified",
+            },
+        )
+    update_verified(db, data, "otp")
+    return create_client(db, reg)
+
+
+def verify_register_email(db: Session, data: RegisterVerified):
+    reg = (
+        db.query(Register)
+        .filter(Register.verification_code == data.code)
+        .filter(Register.email == data.email)
+        .first()
+    )
     if not reg:
         return JSONResponse(
             status_code=400,
@@ -59,5 +96,5 @@ def verify_register(db: Session, code: str):
                 "message": "Email sudah verified",
             },
         )
-    update_verified(db, code)
-    return create_client(db, reg)
+    update_verified(db, data, "email")
+    return {"message": "Email berhasil di verified"}

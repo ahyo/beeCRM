@@ -1,5 +1,5 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, DateTime, String, BigInteger, ForeignKey, Boolean
+from sqlalchemy import Column, DateTime, String, BigInteger, ForeignKey, Boolean, Date
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from datetime import datetime
@@ -21,8 +21,13 @@ class Client(Base):
     fullname = Column(String)
     phone = Column(String)
     register_id = Column(UUID, ForeignKey("register.id"))
-    wp_id = Column(UUID, ForeignKey("wp.id"))
     sales_id = Column(UUID, ForeignKey("sales.id"))
+    no_ktp = Column(String)
+    birth_place = Column(String)
+    birth_date = Column(Date)
+    gender = Column(String)
+    job = Column(String)
+    no_npwp = Column(String)
     time_created = Column(DateTime(timezone=True), default=datetime.utcnow)
     time_updated = Column(DateTime(timezone=True), onupdate=datetime.utcnow)
 
@@ -37,3 +42,14 @@ class dokumenEnum(str, Enum):
     ktp = "ktp"
     selfie = "selfie"
     npwp_kk = "npwp_kk"
+
+
+class ClientUpdate(BaseModel):
+    fullname: str
+    phone: str
+    no_ktp: str
+    birth_place: str
+    birth_date: datetime
+    gender: str
+    job: str
+    no_npwp: str

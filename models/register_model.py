@@ -44,10 +44,12 @@ class RegisterBase(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "fullname": "Foo",
-                    "description": "A very nice Item",
-                    "price": 35.4,
-                    "tax": 3.2,
+                    "fullname": "Ahyo Client",
+                    "email": "client@testing.com",
+                    "password": "rahasia",
+                    "phone": "6281807003289",
+                    "reff_code": "",
+                    "reff_source": "",
                 }
             ]
         }
@@ -61,3 +63,8 @@ class RegisterDisplay(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class RegisterVerified(BaseModel):
+    email: str
+    code: str

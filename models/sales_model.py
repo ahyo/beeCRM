@@ -6,6 +6,7 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 from config.db import Base
 
+
 class Sales(Base):
     __tablename__ = "sales"
     id = Column(
@@ -18,18 +19,18 @@ class Sales(Base):
     password = Column(String)
     fullname = Column(String)
     phone = Column(String)
-    code = Column(String)
-    wp_id = Column(UUID,ForeignKey("wp.id"))
+    code = Column(String, unique=True, index=True)
     time_created = Column(DateTime(timezone=True), default=datetime.utcnow)
     time_updated = Column(DateTime(timezone=True), onupdate=datetime.utcnow)
 
+
 class SalesBase(BaseModel):
-    fullname: str = Field(...,min_length=3)
+    fullname: str = Field(..., min_length=3)
     email: EmailStr
-    password: str = Field(...,min_length=6)
-    phone: str = Field(...,min_length=8)
-    code: str = Field(...,min_length=3)
-    wp_id: str | None = None
+    password: str = Field(..., min_length=6)
+    phone: str = Field(..., min_length=8)
+    code: str = Field(..., min_length=3)
+
 
 class SalesDisplay(BaseModel):
     fullname: str

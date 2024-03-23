@@ -13,12 +13,9 @@ from routers import (
 )
 
 # model BASE
-from models.client_model import Base as ClientBase
+
 from models.sales_model import Base as SalesBase
-from models.wp_model import Base as WpBase
 from models.register_model import Base as RegiterBase
-from models.client_token_model import Base as ClientTokenBase
-from models.sales_token_model import Base as SalesTokenBase
 from models.admin_model import Base as AdminBase
 from models.bank_model import Base as BankBase
 from models.provinces_model import Base as ProvinceBase
@@ -27,6 +24,14 @@ from models.districts_model import Base as DistrictsBase
 from models.villages_model import Base as VillagesBase
 from models.jobs_model import Base as JobsBase
 from models.countries_model import Base as CountriesBase
+
+from models.client_model import Base as ClientBase
+from models.client_address_model import Base as ClientAddressBase
+from models.client_bank_model import Base as ClientBankBase
+from models.client_emergency_model import Base as ClientEmergencyBase
+from models.client_job_model import Base as ClientJobBase
+from models.client_property_model import Base as ClientPropertyBase
+from models.client_personal_model import Base as ClientPersonalBase
 
 from config.db import engine
 
@@ -120,11 +125,15 @@ app.add_middleware(
 
 # DATABASE
 ClientBase.metadata.create_all(engine)
+ClientAddressBase.metadata.create_all(engine)
+ClientBankBase.metadata.create_all(engine)
+ClientEmergencyBase.metadata.create_all(engine)
+ClientJobBase.metadata.create_all(engine)
+ClientPropertyBase.metadata.create_all(engine)
+ClientPersonalBase.metadata.create_all(engine)
+
 SalesBase.metadata.create_all(engine)
-WpBase.metadata.create_all(engine)
 RegiterBase.metadata.create_all(engine)
-ClientTokenBase.metadata.create_all(engine)
-SalesTokenBase.metadata.create_all(engine)
 AdminBase.metadata.create_all(engine)
 
 # MASTER DATA

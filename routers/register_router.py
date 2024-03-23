@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends
-from models.register_model import RegisterBase, RegisterDisplay
-from actions.register_action import create_register, verify_register
+from models.register_model import RegisterBase, RegisterVerified
+from actions.register_action import (
+    create_register,
+    verify_register_email,
+    verify_register_otp,
+)
 from sqlalchemy.orm.session import Session
 from config.db import get_db
 from helpers.send_email import sendEmail
@@ -13,9 +17,14 @@ async def client_register(request: RegisterBase, db: Session = Depends(get_db)):
     return create_register(db, request)
 
 
-@router.get("/verify/{code}")
-async def client_register_verify(code: str, db: Session = Depends(get_db)):
-    return verify_register(db, code)
+@router.post("/verify/otp")
+async def post_register_otp(request: RegisterVerified, db: Session = Depends(get_db)):
+    return verify_register_otp(db, request)
+
+
+@router.post("/verify/email")
+async def post_register_email(request: RegisterVerified, db: Session = Depends(get_db)):
+    return verify_register_email(db, request)
 
 
 # test kirim email

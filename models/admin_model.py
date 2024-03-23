@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 from config.db import Base
+import pyotp
 
 
 class Admin(Base):
@@ -19,15 +20,17 @@ class Admin(Base):
     password = Column(String)
     fullname = Column(String)
     phone = Column(String)
+    secret_token = Column(String, unique=True)
     time_created = Column(DateTime(timezone=True), default=datetime.utcnow)
     time_updated = Column(DateTime(timezone=True), onupdate=datetime.utcnow)
 
 
 class AdminBase(BaseModel):
-    fullname: str = Field(...,min_length=3)
+    fullname: str = Field(..., min_length=8)
     email: EmailStr
-    password: str = Field(...,min_length=6)
-    phone: str = Field(...,min_length=8)
+    password: str = Field(..., min_length=8)
+    phone: str = Field(..., min_length=8)
+
 
 class AdminDisplay(BaseModel):
     fullname: str
@@ -36,3 +39,9 @@ class AdminDisplay(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AdminAuth(BaseModel):
+    id: int
+    email: str
+    fullname: str

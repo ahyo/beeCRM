@@ -2,6 +2,10 @@ import random
 import string
 from passlib.context import CryptContext
 from .send_email import sendEmail
+from pyqrcode import QRCode
+import pyotp
+import datetime
+from random import choice
 
 
 def get_random_string(length):
@@ -34,6 +38,29 @@ def send_register_email(register):
 
 
 def random_number(p):
-    randomlist = random.sample(range(0, 9), p)
-    rndstr = (str(i) for i in randomlist)
-    return "".join(rndstr)
+    otp = "".join(choice(string.digits) for _ in range(p))
+    return otp
+
+
+def generate_totp():
+    code = pyotp.random_base32()
+    return code
+
+
+def generate_totp_uri(str):
+    totp = pyotp.totp.TOTP(str)
+    totp.at(datetime.datetime.now())
+    uri = totp.provisioning_uri(name="ahyo.haryanto@gmail.com", issuer_name="beeCRM")
+    return uri
+
+
+def generate_qrcode(str):
+    code = QRCode(str)
+    image_as_str = code.png_as_base64_str(scale=5)
+    html_img = '<img src="data:image/png;base64,{}">'.format(image_as_str)
+    return html_img
+
+
+def verify_otp(uri, otp):
+    totp = pyotp.parse_uri(uri)
+    return totp.verify(otp)
